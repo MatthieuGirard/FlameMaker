@@ -285,7 +285,7 @@ public class FlameMakerGUI {
 		saveItem.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent E) {
+			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser fc = new JFileChooser();
 				fc.setFileFilter(new FmFilter());
 				File file = null;
