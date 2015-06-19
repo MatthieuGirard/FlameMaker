@@ -235,14 +235,14 @@ public class FlameMakerGUI {
 		menuBar = new JMenuBar();
 
 		// Créé le menu "Fichier"
-		menuFichier = new JMenu("Fichier");
+		menuFichier = new JMenu("File");
 		menuFichier.setMnemonic(KeyEvent.VK_A);
 		menuFichier.getAccessibleContext().setAccessibleDescription(
 				"The only menu in this program that has menu items");
 		menuBar.add(menuFichier);
 
 		// a group of JMenuItems
-		saveItem = new JMenuItem("Sauver", KeyEvent.VK_T);
+		saveItem = new JMenuItem("Save", KeyEvent.VK_T);
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				ActionEvent.CTRL_MASK));
 		saveItem.getAccessibleContext().setAccessibleDescription(
@@ -250,7 +250,7 @@ public class FlameMakerGUI {
 
 		menuFichier.add(saveItem);
 
-		loadItem = new JMenuItem("Charger", KeyEvent.VK_T);
+		loadItem = new JMenuItem("Load", KeyEvent.VK_T);
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
 				ActionEvent.CTRL_MASK));
 		loadItem.getAccessibleContext().setAccessibleDescription(
@@ -262,7 +262,7 @@ public class FlameMakerGUI {
 
 		menuFichier.addSeparator();
 
-		fullScreenItem = new JMenuItem("Plein écran", KeyEvent.VK_T);
+		fullScreenItem = new JMenuItem("Full screen", KeyEvent.VK_T);
 		fullScreenItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11,
 				ActionEvent.CTRL_MASK));
 		fullScreenItem.getAccessibleContext().setAccessibleDescription(
@@ -270,15 +270,15 @@ public class FlameMakerGUI {
 		menuFichier.add(fullScreenItem);
 
 		menuFichier.addSeparator();
-		quitItem = new JMenuItem("Quitter", KeyEvent.VK_T);
+		quitItem = new JMenuItem("Quit", KeyEvent.VK_T);
 		quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
 				ActionEvent.CTRL_MASK));
 		quitItem.getAccessibleContext().setAccessibleDescription(
 				"This doesn't really do anything");
 		menuFichier.add(quitItem);
 
-		// Le menu "À propos"
-		menuAbout = new JMenuItem("À propos", KeyEvent.VK_T);
+		// About menu
+		menuAbout = new JMenuItem("About", KeyEvent.VK_T);
 		menuAbout.setMnemonic(KeyEvent.VK_N);
 		menuAbout.getAccessibleContext().setAccessibleDescription("");
 
@@ -287,7 +287,7 @@ public class FlameMakerGUI {
 			@Override
 			public void actionPerformed(ActionEvent E) {
 				final JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new fmFilter());
+				fc.setFileFilter(new FmFilter());
 				File file = null;
 
 				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -296,18 +296,12 @@ public class FlameMakerGUI {
 				String neededExtension = "";
 
 				try {
-					// Si le nom de fichier donné par l'utilisateur ne se
-					// termine pas par .fm, on le fait à sa place
 					if (!(file.getName().endsWith(".fm"))) {
                         neededExtension += ".fm";
                     }
 					final PrintStream fichier = new PrintStream(file
 							.getAbsolutePath() + neededExtension);
 
-					// On écrit dans le fichier. La première ligne en dessous
-					// d'une transformation (T0, T1, etc...) représente les
-					// modifications affine, tandis que la deuxième représente
-					// le poid de chaque Variation
 					fichier.println("#FLAMEMAKER CONFIG FILE \n#Do NOT"
 					        + " edit unless you know what you are doing");
 					for (int i = 0; i < builder.transformationCount(); i++) {
@@ -331,15 +325,13 @@ public class FlameMakerGUI {
 									frame,
 									"Fractal saved.\n"
 											+ file + " successfully created!",
-									"Succès", JOptionPane.INFORMATION_MESSAGE);
+									"Success", JOptionPane.INFORMATION_MESSAGE);
 				} catch (final FileNotFoundException filNotFound) {
 					JOptionPane.showMessageDialog(frame, "File not found",
-							"Erreur", JOptionPane.ERROR_MESSAGE);
+							"Error", JOptionPane.ERROR_MESSAGE);
 				}
-				// L'utilisateur ferme ou annule la fenêtre de séléction du
-				// fichier
 				catch (final NullPointerException nullPointer) {
-					// Pas besoin d'écrire dans le fichier
+					// nothing
 				}
 			}
 		});
@@ -349,7 +341,7 @@ public class FlameMakerGUI {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new fmFilter());
+				fc.setFileFilter(new FmFilter());
 				File file = null;
 
 				if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -666,14 +658,6 @@ public class FlameMakerGUI {
 		flameTransformationEditionPanel.add(new JSeparator());
 		flameTransformationEditionPanel.add(variationWeightEditionPanel);
 
-		// Configuration des boutons de sauvegarde, chargement, ...
-		final JButton savePPMButton = new JButton("Sauver (.ppm)");
-		final JButton saveForReuseButton = new JButton("Sauver");
-		final JButton loadButton = new JButton("Charger");
-		buttonPanelOtherOption.add(savePPMButton);
-		buttonPanelOtherOption.add(saveForReuseButton);
-		buttonPanelOtherOption.add(loadButton);
-
 		// //////////////////////////////////////////////////////
 		// Configuration de l'interface de modification affine
 		// //////////////////////////////////////////////////////
@@ -841,15 +825,12 @@ public class FlameMakerGUI {
 		        BorderFactory.createTitledBorder("Transformations");
 		final Border flameTransformationEditionPanelBorder = BorderFactory
 				.createTitledBorder("Transformation courante");
-		final Border dataManagementBorder = BorderFactory
-				.createTitledBorder("Autres options");
 
 		transPanel.setBorder(transBorder);
 		flamePanel.setBorder(flameBorder);
 		edittingTransformationsPanel.setBorder(listBorder);
 		flameTransformationEditionPanel
 				.setBorder(flameTransformationEditionPanelBorder);
-		dataManagementPanel.setBorder(dataManagementBorder);
 
 		flamePanel.add(new FlameBuilderPreviewComponent(builder,
 				backgroundColor, palette, drawFrame, density),
@@ -1301,20 +1282,21 @@ public class FlameMakerGUI {
 		}
 	}
 
-	/** Utilisé par fmFilter */
+	/**
+	 * Used by FmFilter.
+	 */
 	public static class Utils {
 
 		@SuppressWarnings("javadoc")
 		public final static String fm = "fm";
 
 		/**
-		 * Retourne l'extension d'un fichier (tiré de la doc d'oracle)
+		 * Returns the extension of a file.
 		 *
-		 * @param f
-		 * @return une chaîne de caractère contenant l'extension du fichier ou
-		 *         null si le fichier n'a pas d'extension
+		 * @param f a file name
+		 * @return the file extension, or NULL if none
 		 */
-		public static String getExtension(File f) {
+		public static String getExtension(final File f) {
 			String ext = null;
 			final String s = f.getName();
 			final int i = s.lastIndexOf('.');
@@ -1329,22 +1311,18 @@ public class FlameMakerGUI {
 	/**
 	 *
 	 */
-	public class fmFilter extends FileFilter {
+	public class FmFilter extends FileFilter {
 
-		// Accepte les dossier et les fichiers de type .fm seulement
+		// Accept directories and .fm files only
 		@Override
-		public boolean accept(File f) {
+		public boolean accept(final File f) {
 			if (f.isDirectory()) {
                 return true;
             }
 
 			final String extension = Utils.getExtension(f);
 			if (extension != null) {
-                if (extension.equals(Utils.fm)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return extension.equals(Utils.fm);
             }
 
 			return false;
@@ -1353,7 +1331,7 @@ public class FlameMakerGUI {
 		// The description of this filter
 		@Override
 		public String getDescription() {
-			return "Fichiersf de configuration .fm";
+			return "FlameMaker files .fm";
 		}
 	}
 }
